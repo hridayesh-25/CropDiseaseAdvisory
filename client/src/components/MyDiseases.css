@@ -1,0 +1,228 @@
+.my-diseases {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.my-diseases h2 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.diseases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.disease-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.disease-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.disease-card-header h3 {
+  color: #333;
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.disease-date {
+  color: #666;
+  font-size: 14px;
+}
+
+.disease-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-icon {
+  font-size: 20px;
+}
+
+.status-icon.approved {
+  color: #2ecc71;
+}
+
+.status-icon.pending {
+  color: #f39c12;
+}
+
+.status-icon.rejected {
+  color: #e74c3c;
+}
+
+.status-text {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-text.approved {
+  color: #2ecc71;
+}
+
+.status-text.pending {
+  color: #f39c12;
+}
+
+.status-text.rejected {
+  color: #e74c3c;
+}
+
+.disease-description {
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.specialist-notes {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.specialist-notes strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #667eea;
+}
+
+.specialist-notes p {
+  color: #666;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.medicines-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.medicines-section h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.medicines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.medicine-card {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 15px;
+  position: relative;
+  border: 2px solid #e0e0e0;
+}
+
+.medicine-card h5 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.medicine-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.medicine-dosage {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.medicine-desc {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.medicine-effectiveness {
+  font-size: 12px;
+  color: #2ecc71;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.price-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.price-badge.low {
+  background: #2ecc71;
+  color: white;
+}
+
+.price-badge.medium {
+  background: #f39c12;
+  color: white;
+}
+
+.price-badge.high {
+  background: #e74c3c;
+  color: white;
+}
+
+.no-medicines {
+  text-align: center;
+  padding: 20px;
+  background: #fff3cd;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.empty-state p {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .disease-card-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .medicines-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
