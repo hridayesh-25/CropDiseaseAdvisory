@@ -5,12 +5,14 @@ const Medicine = require('./models/Medicine');
 
 dotenv.config();
 
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://hridayeshkothamasu123_db_user:ZOtTIwD5nha706OH@cluster0.fyxovzw.mongodb.net/crop-advisory?retryWrites=true&w=majority&appName=Cluster0';
+const mongoURI = process.env.MONGODB_URI;
 
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+if (!mongoURI) {
+  console.error('Error: MONGODB_URI is not set. Create a .env file in the server folder with MONGODB_URI.');
+  process.exit(1);
+}
+
+mongoose.connect(mongoURI)
 .then(() => {
   console.log('MongoDB Connected for seeding');
   seedDatabase();
@@ -22,11 +24,6 @@ mongoose.connect(mongoURI, {
 
 const seedDatabase = async () => {
   try {
-    // Clear existing data (optional - comment out if you want to keep existing data)
-    // await Product.deleteMany({});
-    // await Medicine.deleteMany({});
-
-    // Seed Products
     const products = [
       {
         name: 'Organic Fertilizer NPK 19:19:19',
@@ -102,7 +99,6 @@ const seedDatabase = async () => {
       }
     ];
 
-    // Seed Medicines
     const medicines = [
       {
         name: 'Bavistin 50% WP',
@@ -136,124 +132,19 @@ const seedDatabase = async () => {
         dosage: '1ml per liter of water',
         effectiveness: 95,
         status: 'approved'
-      },
-      {
-        name: 'Sulfur 80% WP',
-        disease: 'Powdery Mildew',
-        cropType: 'Wheat',
-        priceCategory: 'low',
-        price: 180,
-        description: 'Organic fungicide for powdery mildew control in wheat.',
-        dosage: '3g per liter of water',
-        effectiveness: 80,
-        status: 'approved'
-      },
-      {
-        name: 'Tebuconazole 25% EC',
-        disease: 'Powdery Mildew',
-        cropType: 'Wheat',
-        priceCategory: 'medium',
-        price: 550,
-        description: 'Systemic fungicide for effective powdery mildew management.',
-        dosage: '1.5ml per liter of water',
-        effectiveness: 92,
-        status: 'approved'
-      },
-      {
-        name: 'Azoxystrobin 23% SC',
-        disease: 'Powdery Mildew',
-        cropType: 'Wheat',
-        priceCategory: 'high',
-        price: 850,
-        description: 'Advanced fungicide with excellent control of powdery mildew.',
-        dosage: '1ml per liter of water',
-        effectiveness: 96,
-        status: 'approved'
-      },
-      {
-        name: 'Copper Oxychloride 50% WP',
-        disease: 'Blight',
-        cropType: 'Tomato',
-        priceCategory: 'low',
-        price: 320,
-        description: 'Contact fungicide for early blight and late blight in tomatoes.',
-        dosage: '2g per liter of water',
-        effectiveness: 82,
-        status: 'approved'
-      },
-      {
-        name: 'Chlorothalonil 75% WP',
-        disease: 'Blight',
-        cropType: 'Tomato',
-        priceCategory: 'medium',
-        price: 480,
-        description: 'Protective fungicide for blight diseases in vegetables.',
-        dosage: '2g per liter of water',
-        effectiveness: 88,
-        status: 'approved'
-      },
-      {
-        name: 'Metalaxyl + Mancozeb',
-        disease: 'Blight',
-        cropType: 'Tomato',
-        priceCategory: 'high',
-        price: 920,
-        description: 'Systemic and contact fungicide combination for complete blight control.',
-        dosage: '2g per liter of water',
-        effectiveness: 94,
-        status: 'approved'
-      },
-      {
-        name: 'Rust Control Basic',
-        disease: 'Rust Disease',
-        cropType: 'Wheat',
-        priceCategory: 'low',
-        price: 280,
-        description: 'Basic fungicide for rust disease control in cereals.',
-        dosage: '2.5g per liter of water',
-        effectiveness: 78,
-        status: 'approved'
-      },
-      {
-        name: 'Triadimefon 25% WP',
-        disease: 'Rust Disease',
-        cropType: 'Wheat',
-        priceCategory: 'medium',
-        price: 520,
-        description: 'Systemic fungicide for rust disease management.',
-        dosage: '1g per liter of water',
-        effectiveness: 90,
-        status: 'approved'
-      },
-      {
-        name: 'Flutriafol 12.5% SC',
-        disease: 'Rust Disease',
-        cropType: 'Wheat',
-        priceCategory: 'high',
-        price: 980,
-        description: 'Premium systemic fungicide for rust disease with long residual activity.',
-        dosage: '0.8ml per liter of water',
-        effectiveness: 97,
-        status: 'approved'
       }
     ];
 
-    // Insert products
     const existingProducts = await Product.countDocuments();
     if (existingProducts === 0) {
       await Product.insertMany(products);
       console.log(`✅ Seeded ${products.length} products`);
-    } else {
-      console.log(`ℹ️  Products already exist (${existingProducts} found). Skipping product seeding.`);
     }
 
-    // Insert medicines
     const existingMedicines = await Medicine.countDocuments();
     if (existingMedicines === 0) {
       await Medicine.insertMany(medicines);
       console.log(`✅ Seeded ${medicines.length} medicines`);
-    } else {
-      console.log(`ℹ️  Medicines already exist (${existingMedicines} found). Skipping medicine seeding.`);
     }
 
     console.log('✅ Database seeding completed!');
@@ -263,4 +154,3 @@ const seedDatabase = async () => {
     process.exit(1);
   }
 };
-

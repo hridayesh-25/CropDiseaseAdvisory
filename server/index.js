@@ -7,6 +7,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
+const mongoURI = process.env.MONGODB_URI;
 
 // Middleware
 app.use(cors());
@@ -23,10 +24,10 @@ app.use('/api/crops', require('./routes/crops'));
 app.use('/api/lands', require('./routes/lands'));
 app.use('/api/users', require('./routes/users'));
 
-// Serve uploaded files
+// Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve static files from React app in production
+// React build
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
   app.get('*', (req, res) => {
@@ -34,22 +35,26 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// MongoDB Connection
-const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://hridayeshkothamasu123_db_user:ZOtTIwD5nha706OH@cluster0.fyxovzw.mongodb.net/crop-advisory?retryWrites=true&w=majority&appName=Cluster0';
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  console.error('Connection string:', mongoURI.replace(/:[^:@]+@/, ':****@')); // Hide password in logs
-});
+// MongoDB
+if (!mongoURI) {
+  console.warn('Warning: MONGODB_URI is not set. MongoDB will not be connected.');
+} else {
+  mongoose.connect(mongoURI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
+}
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+server.on('error', (err) => {
+  if (err && err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Set a different PORT or stop the process using this port.`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+    process.exit(1);
+  }
+});

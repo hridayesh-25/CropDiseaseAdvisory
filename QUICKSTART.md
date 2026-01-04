@@ -24,7 +24,7 @@ npm install
 Create `server/.env`:
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/crop-advisory
+MONGODB_URI=<your_mongodb_connection_string>
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
 JWT_EXPIRE=7d
 WEATHER_API_KEY=your_openweathermap_api_key_optional
