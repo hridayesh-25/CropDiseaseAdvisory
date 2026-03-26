@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import api from '../utils/api';
-import { toast } from 'react-toastify';
-import { FaCheckCircle, FaClock, FaTimesCircle } from 'react-icons/fa';
-import './MyDiseases.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import api from "../utils/api";
+import { toast } from "react-toastify";
+import {
+  FaCheckCircle,
+  FaClock,
+  FaTimesCircle,
+  FaShoppingCart,
+} from "react-icons/fa";
+import { useCart } from "../context/CartContext";
+import "./MyDiseases.css";
 
 const MyDiseases = () => {
   const [diseases, setDiseases] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchDiseases();
@@ -15,22 +22,31 @@ const MyDiseases = () => {
 
   const fetchDiseases = async () => {
     try {
-      const response = await api.get('/diseases');
+      const response = await api.get("/diseases");
       setDiseases(response.data);
     } catch (error) {
-      toast.error('Failed to fetch diseases');
+      toast.error("Failed to fetch diseases");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleAddToCart = async (medicine, diseaseId) => {
+    try {
+      await addToCart(medicine._id, 1);
+      toast.success(`${medicine.name} added to cart!`);
+    } catch (error) {
+      toast.error("Failed to add to cart");
+    }
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'approved':
+      case "approved":
         return <FaCheckCircle className="status-icon approved" />;
-      case 'pending':
+      case "pending":
         return <FaClock className="status-icon pending" />;
-      case 'rejected':
+      case "rejected":
         return <FaTimesCircle className="status-icon rejected" />;
       default:
         return <FaClock className="status-icon" />;
@@ -63,7 +79,10 @@ const MyDiseases = () => {
           >
             <div className="disease-card-header">
               <div>
-                <h3>{disease.cropType} - {disease.predictedDisease || disease.diseaseName}</h3>
+                <h3>
+                  {disease.cropType} -{" "}
+                  {disease.predictedDisease || disease.diseaseName}
+                </h3>
                 <p className="disease-date">
                   Submitted: {new Date(disease.createdAt).toLocaleDateString()}
                 </p>
@@ -71,7 +90,8 @@ const MyDiseases = () => {
               <div className="disease-status">
                 {getStatusIcon(disease.status)}
                 <span className={`status-text ${disease.status}`}>
-                  {disease.status.charAt(0).toUpperCase() + disease.status.slice(1)}
+                  {disease.status.charAt(0).toUpperCase() +
+                    disease.status.slice(1)}
                 </span>
               </div>
             </div>
@@ -98,22 +118,33 @@ const MyDiseases = () => {
                       </div>
                       <h5>{medicine.name}</h5>
                       <p className="medicine-price">₹{medicine.price}</p>
-                      <p className="medicine-dosage">Dosage: {medicine.dosage}</p>
+                      <p className="medicine-dosage">
+                        Dosage: {medicine.dosage}
+                      </p>
                       <p className="medicine-desc">{medicine.description}</p>
                       <div className="medicine-effectiveness">
                         Effectiveness: {medicine.effectiveness}%
                       </div>
+                      {disease.status === "approved" && (
+                        <button
+                          className="add-to-cart-btn"
+                          onClick={() => handleAddToCart(medicine, disease._id)}
+                        >
+                          <FaShoppingCart /> Add to Cart
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {disease.status === 'approved' && (!disease.medicines || disease.medicines.length === 0) && (
-              <div className="no-medicines">
-                <p>No medicines recommended for this disease yet.</p>
-              </div>
-            )}
+            {disease.status === "approved" &&
+              (!disease.medicines || disease.medicines.length === 0) && (
+                <div className="no-medicines">
+                  <p>No medicines recommended for this disease yet.</p>
+                </div>
+              )}
           </motion.div>
         ))}
       </div>
@@ -122,4 +153,3 @@ const MyDiseases = () => {
 };
 
 export default MyDiseases;
-

@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import api from '../utils/api';
-import { FaUsers, FaUserShield, FaUserMd, FaProductHunt, FaFlask } from 'react-icons/fa';
-import './AdminStats.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import api from "../utils/api";
+import { FaUsers, FaUserShield, FaUserMd } from "react-icons/fa";
+import "./AdminStats.css";
 
 const AdminStats = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAdmins: 0,
     totalSpecialists: 0,
-    total: 0
+    total: 0,
   });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
@@ -19,20 +18,38 @@ const AdminStats = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await api.get('/users/stats');
+      const response = await api.get("/users/stats");
       setStats(response.data);
     } catch (error) {
-      console.error('Failed to fetch stats');
-    } finally {
-      setLoading(false);
+      console.error("Failed to fetch stats");
     }
   };
 
   const statCards = [
-    { icon: FaUsers, label: 'Total Users', value: stats.totalUsers, color: '#667eea' },
-    { icon: FaUserShield, label: 'Admins', value: stats.totalAdmins, color: '#e74c3c' },
-    { icon: FaUserMd, label: 'Specialists', value: stats.totalSpecialists, color: '#2ecc71' },
-    { icon: FaUsers, label: 'Total Accounts', value: stats.total, color: '#f39c12' }
+    {
+      icon: FaUsers,
+      label: "Total Users",
+      value: stats.totalUsers,
+      color: "#667eea",
+    },
+    {
+      icon: FaUserShield,
+      label: "Admins",
+      value: stats.totalAdmins,
+      color: "#e74c3c",
+    },
+    {
+      icon: FaUserMd,
+      label: "Specialists",
+      value: stats.totalSpecialists,
+      color: "#2ecc71",
+    },
+    {
+      icon: FaUsers,
+      label: "Total Accounts",
+      value: stats.total,
+      color: "#f39c12",
+    },
   ];
 
   return (
@@ -63,4 +80,3 @@ const AdminStats = () => {
 };
 
 export default AdminStats;
-

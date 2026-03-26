@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '../../components/Navbar';
-import DiseaseReview from '../../components/DiseaseReview';
-import MedicineApproval from '../../components/MedicineApproval';
-import api from '../../utils/api';
-import { toast } from 'react-toastify';
-import './Dashboard.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Navbar from "../../components/Navbar";
+import DiseaseReview from "../../components/DiseaseReview";
+import MedicineApproval from "../../components/MedicineApproval";
+import MedicineRecommendations from "../../components/MedicineRecommendations";
+import api from "../../utils/api";
+import "./Dashboard.css";
 
 const SpecialistDashboard = () => {
-  const [activeTab, setActiveTab] = useState('diseases');
-  const [pendingCount, setPendingCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("recommendations");
+  const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
 
   useEffect(() => {
     fetchPendingCount();
@@ -17,17 +17,31 @@ const SpecialistDashboard = () => {
 
   const fetchPendingCount = async () => {
     try {
-      const response = await api.get('/diseases');
-      const pending = response.data.filter(d => d.status === 'pending').length;
-      setPendingCount(pending);
+      const diseasesResponse = await api.get("/diseases");
+      const pending = diseasesResponse.data.filter(
+        (d) => d.status === "pending",
+      ).length;
+      const approved = diseasesResponse.data.filter(
+        (d) => d.status === "approved",
+      ).length;
+      const rejected = diseasesResponse.data.filter(
+        (d) => d.status === "rejected",
+      ).length;
+      setStats({ pending, approved, rejected });
     } catch (error) {
-      console.error('Failed to fetch pending count');
+      console.error("Failed to fetch pending count");
     }
   };
 
   const tabs = [
-    { id: 'diseases', label: 'Disease Reviews', icon: '🔬', badge: pendingCount },
-    { id: 'medicines', label: 'Medicine Approval', icon: '💊' }
+    { id: "recommendations", label: "Medicine Recommendations", icon: "💊" },
+    {
+      id: "diseases",
+      label: "Disease Reviews",
+      icon: "🔬",
+      badge: stats.pending,
+    },
+    { id: "medicines", label: "Medicine Approval", icon: "✓" },
   ];
 
   return (
@@ -42,27 +56,64 @@ const SpecialistDashboard = () => {
           >
             Specialist Dashboard
           </motion.h1>
-          <p>Review diseases and approve medicines</p>
+          <p>Manage disease reviews, medicine approvals, and recommendations</p>
+        </div>
+
+        <div className="dashboard-stats">
+          <motion.div
+            className="stat-box"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <span className="stat-label">Pending Reviews</span>
+            <span className="stat-number pending">{stats.pending}</span>
+          </motion.div>
+          <motion.div
+            className="stat-box"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <span className="stat-label">Approved Diseases</span>
+            <span className="stat-number approved">{stats.approved}</span>
+          </motion.div>
+          <motion.div
+            className="stat-box"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <span className="stat-label">Rejected</span>
+            <span className="stat-number rejected">{stats.rejected}</span>
+          </motion.div>
         </div>
 
         <div className="dashboard-tabs">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className="tab-icon">{tab.icon}</span>
               {tab.label}
-              {tab.badge > 0 && (
-                <span className="tab-badge">{tab.badge}</span>
-              )}
+              {tab.badge > 0 && <span className="tab-badge">{tab.badge}</span>}
             </button>
           ))}
         </div>
 
         <div className="dashboard-content">
-          {activeTab === 'diseases' && (
+          {activeTab === "recommendations" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="tab-content"
+            >
+              <MedicineRecommendations />
+            </motion.div>
+          )}
+
+          {activeTab === "diseases" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -72,7 +123,7 @@ const SpecialistDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'medicines' && (
+          {activeTab === "medicines" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,4 +139,3 @@ const SpecialistDashboard = () => {
 };
 
 export default SpecialistDashboard;
-

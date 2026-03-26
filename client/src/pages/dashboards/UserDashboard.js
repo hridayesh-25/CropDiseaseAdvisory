@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '../../components/Navbar';
-import ProductCard from '../../components/ProductCard';
-import DiseaseChecker from '../../components/DiseaseChecker';
-import MyDiseases from '../../components/MyDiseases';
-import CropAdvisory from '../../components/CropAdvisory';
-import WeatherWidget from '../../components/WeatherWidget';
-import LandLeasing from '../../components/LandLeasing';
-import api from '../../utils/api';
-import { toast } from 'react-toastify';
-import './Dashboard.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Navbar from "../../components/Navbar";
+import ProductCard from "../../components/ProductCard";
+import DiseaseChecker from "../../components/DiseaseChecker";
+import MyDiseases from "../../components/MyDiseases";
+import MyRecommendations from "../../components/MyRecommendations";
+import OrderHistory from "../../components/OrderHistory";
+import CropAdvisory from "../../components/CropAdvisory";
+import WeatherWidget from "../../components/WeatherWidget";
+import LandLeasing from "../../components/LandLeasing";
+import api from "../../utils/api";
+import { toast } from "react-toastify";
+import "./Dashboard.css";
 
 const UserDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState("products");
 
   useEffect(() => {
     fetchProducts();
@@ -22,23 +24,25 @@ const UserDashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await api.get('/products');
+      const response = await api.get("/products");
       setProducts(response.data);
     } catch (error) {
-      console.error('Products fetch error:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch products');
+      console.error("Products fetch error:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch products");
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'products', label: 'Products', icon: '🛍️' },
-    { id: 'disease', label: 'Check Disease', icon: '🔬' },
-    { id: 'my-diseases', label: 'My Diseases', icon: '📋' },
-    { id: 'advisory', label: 'Crop Advisory', icon: '🌾' },
-    { id: 'weather', label: 'Weather', icon: '🌤️' },
-    { id: 'lands', label: 'Land Leasing', icon: '🏞️' }
+    { id: "products", label: "Products", icon: "🛍️" },
+    { id: "disease", label: "Check Disease", icon: "🔬" },
+    { id: "my-diseases", label: "My Diseases", icon: "📋" },
+    { id: "recommendations", label: "Recommendations", icon: "💊" },
+    { id: "orders", label: "My Orders", icon: "📦" },
+    { id: "advisory", label: "Crop Advisory", icon: "🌾" },
+    { id: "weather", label: "Weather", icon: "🌤️" },
+    { id: "lands", label: "Land Leasing", icon: "🏞️" },
   ];
 
   return (
@@ -60,7 +64,7 @@ const UserDashboard = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className="tab-icon">{tab.icon}</span>
@@ -70,7 +74,7 @@ const UserDashboard = () => {
         </div>
 
         <div className="dashboard-content">
-          {activeTab === 'products' && (
+          {activeTab === "products" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -94,7 +98,7 @@ const UserDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'disease' && (
+          {activeTab === "disease" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -104,7 +108,7 @@ const UserDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'my-diseases' && (
+          {activeTab === "my-diseases" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,7 +118,27 @@ const UserDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'advisory' && (
+          {activeTab === "recommendations" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="tab-content"
+            >
+              <MyRecommendations />
+            </motion.div>
+          )}
+
+          {activeTab === "orders" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="tab-content"
+            >
+              <OrderHistory />
+            </motion.div>
+          )}
+
+          {activeTab === "advisory" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -124,7 +148,7 @@ const UserDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'weather' && (
+          {activeTab === "weather" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -134,7 +158,7 @@ const UserDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'lands' && (
+          {activeTab === "lands" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -150,4 +174,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-

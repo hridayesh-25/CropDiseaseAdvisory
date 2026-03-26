@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from '../../components/Navbar';
-import AdminStats from '../../components/AdminStats';
-import UserManagement from '../../components/UserManagement';
-import ProductManagement from '../../components/ProductManagement';
-import MedicineManagement from '../../components/MedicineManagement';
-import api from '../../utils/api';
-import { toast } from 'react-toastify';
-import './Dashboard.css';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import Navbar from "../../components/Navbar";
+import AdminStats from "../../components/AdminStats";
+import UserManagement from "../../components/UserManagement";
+import ProductManagement from "../../components/ProductManagement";
+import MedicineManagement from "../../components/MedicineManagement";
+import DiseaseRequests from "../../components/DiseaseRequests";
+import "./Dashboard.css";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('stats');
+  const [activeTab, setActiveTab] = useState("stats");
 
   const tabs = [
-    { id: 'stats', label: 'Statistics', icon: '📊' },
-    { id: 'users', label: 'Users', icon: '👥' },
-    { id: 'products', label: 'Products', icon: '🛍️' },
-    { id: 'medicines', label: 'Medicines', icon: '💊' }
+    { id: "stats", label: "Statistics", icon: "📊" },
+    { id: "requests", label: "Requests", icon: "📋" },
+    { id: "users", label: "Users", icon: "👥" },
+    { id: "products", label: "Products", icon: "🛍️" },
+    { id: "medicines", label: "Medicines", icon: "💊" },
   ];
 
   return (
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className="tab-icon">{tab.icon}</span>
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="dashboard-content">
-          {activeTab === 'stats' && (
+          {activeTab === "stats" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -58,7 +58,17 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'users' && (
+          {activeTab === "requests" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="tab-content"
+            >
+              <DiseaseRequests />
+            </motion.div>
+          )}
+
+          {activeTab === "users" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -68,7 +78,7 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'products' && (
+          {activeTab === "products" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -78,7 +88,7 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {activeTab === 'medicines' && (
+          {activeTab === "medicines" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -94,4 +104,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-

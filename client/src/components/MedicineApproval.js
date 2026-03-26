@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import api from '../utils/api';
-import { toast } from 'react-toastify';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import './MedicineApproval.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import api from "../utils/api";
+import { toast } from "react-toastify";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import "./MedicineApproval.css";
 
 const MedicineApproval = () => {
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('pending');
+  const [filter, setFilter] = useState("pending");
 
   useEffect(() => {
     fetchMedicines();
@@ -16,12 +16,16 @@ const MedicineApproval = () => {
 
   const fetchMedicines = async () => {
     try {
-      const response = await api.get('/medicines', {
-        params: { status: filter || undefined }
+      setLoading(true);
+      const response = await api.get("/medicines", {
+        params: { status: filter || undefined },
       });
-      setMedicines(response.data);
+      console.log("Fetched medicines:", response.data);
+      setMedicines(response.data || []);
     } catch (error) {
-      toast.error('Failed to fetch medicines');
+      console.error("Error fetching medicines:", error);
+      toast.error("Failed to fetch medicines");
+      setMedicines([]);
     } finally {
       setLoading(false);
     }
@@ -30,21 +34,21 @@ const MedicineApproval = () => {
   const handleApprove = async (medicineId) => {
     try {
       await api.put(`/medicines/${medicineId}/approve`);
-      toast.success('Medicine approved');
+      toast.success("Medicine approved");
       fetchMedicines();
     } catch (error) {
-      toast.error('Failed to approve medicine');
+      toast.error("Failed to approve medicine");
     }
   };
 
   const handleReject = async (medicineId) => {
-    if (window.confirm('Are you sure you want to reject this medicine?')) {
+    if (window.confirm("Are you sure you want to reject this medicine?")) {
       try {
-        await api.put(`/medicines/${medicineId}`, { status: 'rejected' });
-        toast.success('Medicine rejected');
+        await api.put(`/medicines/${medicineId}`, { status: "rejected" });
+        toast.success("Medicine rejected");
         fetchMedicines();
       } catch (error) {
-        toast.error('Failed to reject medicine');
+        toast.error("Failed to reject medicine");
       }
     }
   };
@@ -80,19 +84,30 @@ const MedicineApproval = () => {
                 </div>
                 <h3>{medicine.name}</h3>
                 <div className="medicine-info">
-                  <p><strong>Disease:</strong> {medicine.disease}</p>
-                  <p><strong>Crop Type:</strong> {medicine.cropType}</p>
-                  <p><strong>Price:</strong> ₹{medicine.price}</p>
-                  <p><strong>Dosage:</strong> {medicine.dosage}</p>
-                  <p><strong>Effectiveness:</strong> {medicine.effectiveness}%</p>
+                  <p>
+                    <strong>Disease:</strong> {medicine.disease}
+                  </p>
+                  <p>
+                    <strong>Crop Type:</strong> {medicine.cropType}
+                  </p>
+                  <p>
+                    <strong>Price:</strong> ₹{medicine.price}
+                  </p>
+                  <p>
+                    <strong>Dosage:</strong> {medicine.dosage}
+                  </p>
+                  <p>
+                    <strong>Effectiveness:</strong> {medicine.effectiveness}%
+                  </p>
                 </div>
                 <p className="medicine-description">{medicine.description}</p>
                 <div className="medicine-status">
-                  Status: <span className={`status-badge ${medicine.status}`}>
+                  Status:{" "}
+                  <span className={`status-badge ${medicine.status}`}>
                     {medicine.status}
                   </span>
                 </div>
-                {medicine.status === 'pending' && (
+                {medicine.status === "pending" && (
                   <div className="medicine-actions">
                     <button
                       className="reject-btn"
@@ -118,4 +133,3 @@ const MedicineApproval = () => {
 };
 
 export default MedicineApproval;
-

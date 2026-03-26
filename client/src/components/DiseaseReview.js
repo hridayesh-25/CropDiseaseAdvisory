@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import api from '../utils/api';
-import { toast } from 'react-toastify';
-import { FaCheck, FaTimes, FaEye } from 'react-icons/fa';
-import './DiseaseReview.css';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import api from "../utils/api";
+import { toast } from "react-toastify";
+import { FaCheck, FaTimes, FaEye } from "react-icons/fa";
+import "./DiseaseReview.css";
 
 const DiseaseReview = ({ onReview }) => {
   const [diseases, setDiseases] = useState([]);
@@ -11,9 +11,9 @@ const DiseaseReview = ({ onReview }) => {
   const [availableMedicines, setAvailableMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewData, setReviewData] = useState({
-    status: 'reviewed',
-    specialistNotes: '',
-    medicines: []
+    status: "reviewed",
+    specialistNotes: "",
+    medicines: [],
   });
 
   useEffect(() => {
@@ -29,12 +29,12 @@ const DiseaseReview = ({ onReview }) => {
   const fetchDiseases = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/diseases');
-      console.log('Fetched diseases:', response.data);
+      const response = await api.get("/diseases");
+      console.log("Fetched diseases:", response.data);
       setDiseases(response.data || []);
     } catch (error) {
-      console.error('Error fetching diseases:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch diseases');
+      console.error("Error fetching diseases:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch diseases");
       setDiseases([]);
     } finally {
       setLoading(false);
@@ -43,53 +43,62 @@ const DiseaseReview = ({ onReview }) => {
 
   const fetchAvailableMedicines = async () => {
     if (!selectedDisease) return;
-    
+
     try {
-      const response = await api.get('/medicines', {
+      const diseaseName =
+        selectedDisease.predictedDisease || selectedDisease.diseaseName;
+      console.log(
+        `Fetching medicines for disease: ${diseaseName}, cropType: ${selectedDisease.cropType}`,
+      );
+
+      const response = await api.get("/medicines", {
         params: {
-          disease: selectedDisease.predictedDisease || selectedDisease.diseaseName,
+          disease: diseaseName,
           cropType: selectedDisease.cropType,
-          status: 'approved'
-        }
+          status: "approved",
+        },
       });
+
+      console.log(`Found ${response.data.length} medicines`);
       setAvailableMedicines(response.data);
-      
+
       // Pre-select medicines if none selected
       if (reviewData.medicines.length === 0 && response.data.length > 0) {
         // Select one medicine from each price category
-        const low = response.data.find(m => m.priceCategory === 'low');
-        const medium = response.data.find(m => m.priceCategory === 'medium');
-        const high = response.data.find(m => m.priceCategory === 'high');
-        const selected = [low, medium, high].filter(Boolean).map(m => m._id);
+        const low = response.data.find((m) => m.priceCategory === "low");
+        const medium = response.data.find((m) => m.priceCategory === "medium");
+        const high = response.data.find((m) => m.priceCategory === "high");
+        const selected = [low, medium, high].filter(Boolean).map((m) => m._id);
         setReviewData({ ...reviewData, medicines: selected });
       }
     } catch (error) {
-      console.error('Failed to fetch medicines:', error);
+      console.error("Failed to fetch medicines:", error);
+      setAvailableMedicines([]);
     }
   };
 
   const handleReview = async (diseaseId, action) => {
     try {
-      if (action === 'approve') {
+      if (action === "approve") {
         await api.put(`/diseases/${diseaseId}/approve`, {
           ...reviewData,
-          status: 'approved',
-          medicines: reviewData.medicines
+          status: "approved",
+          medicines: reviewData.medicines,
         });
-        toast.success('Disease approved successfully with medicines');
+        toast.success("Disease approved successfully with medicines");
       } else {
         await api.put(`/diseases/${diseaseId}/review`, {
           ...reviewData,
-          status: action === 'reject' ? 'rejected' : 'reviewed'
+          status: action === "reject" ? "rejected" : "reviewed",
         });
-        toast.success('Review submitted');
+        toast.success("Review submitted");
       }
       fetchDiseases();
       if (onReview) onReview();
       setSelectedDisease(null);
-      setReviewData({ status: 'reviewed', specialistNotes: '', medicines: [] });
+      setReviewData({ status: "reviewed", specialistNotes: "", medicines: [] });
     } catch (error) {
-      toast.error('Failed to submit review');
+      toast.error("Failed to submit review");
     }
   };
 
@@ -98,26 +107,30 @@ const DiseaseReview = ({ onReview }) => {
     if (currentMedicines.includes(medicineId)) {
       setReviewData({
         ...reviewData,
-        medicines: currentMedicines.filter(id => id !== medicineId)
+        medicines: currentMedicines.filter((id) => id !== medicineId),
       });
     } else {
       setReviewData({
         ...reviewData,
-        medicines: [...currentMedicines, medicineId]
+        medicines: [...currentMedicines, medicineId],
       });
     }
   };
 
-  const pendingDiseases = diseases.filter(d => d.status === 'pending');
-  const reviewedDiseases = diseases.filter(d => d.status !== 'pending');
+  const pendingDiseases = diseases.filter((d) => d.status === "pending");
+  const reviewedDiseases = diseases.filter((d) => d.status !== "pending");
 
   return (
     <div className="disease-review">
       <div className="review-header">
         <h2>Disease Reviews</h2>
         <div className="stats">
-          <span className="stat-item pending">{pendingDiseases.length} Pending</span>
-          <span className="stat-item reviewed">{reviewedDiseases.length} Reviewed</span>
+          <span className="stat-item pending">
+            {pendingDiseases.length} Pending
+          </span>
+          <span className="stat-item reviewed">
+            {reviewedDiseases.length} Reviewed
+          </span>
         </div>
       </div>
 
@@ -133,7 +146,10 @@ const DiseaseReview = ({ onReview }) => {
           ) : pendingDiseases.length === 0 ? (
             <div className="empty-state">
               <p>No pending diseases to review.</p>
-              <p>All diseases have been reviewed. Total: {diseases.length} diseases</p>
+              <p>
+                All diseases have been reviewed. Total: {diseases.length}{" "}
+                diseases
+              </p>
             </div>
           ) : (
             pendingDiseases.map((disease) => (
@@ -144,9 +160,12 @@ const DiseaseReview = ({ onReview }) => {
                 animate={{ opacity: 1, x: 0 }}
               >
                 <div className="disease-info">
-                  <h3>{disease.cropType} - {disease.predictedDisease || disease.diseaseName}</h3>
+                  <h3>
+                    {disease.cropType} -{" "}
+                    {disease.predictedDisease || disease.diseaseName}
+                  </h3>
                   <p className="disease-meta">
-                    Submitted by: {disease.user?.name || 'Unknown'} | 
+                    Submitted by: {disease.user?.name || "Unknown"} |
                     Confidence: {(disease.confidence * 100).toFixed(1)}%
                   </p>
                   {disease.description && (
@@ -190,14 +209,20 @@ const DiseaseReview = ({ onReview }) => {
                   <strong>Crop Type:</strong> {selectedDisease.cropType}
                 </div>
                 <div className="detail-row">
-                  <strong>Disease:</strong> {selectedDisease.predictedDisease || selectedDisease.diseaseName}
+                  <strong>Disease:</strong>{" "}
+                  {selectedDisease.predictedDisease ||
+                    selectedDisease.diseaseName}
                 </div>
                 <div className="detail-row">
-                  <strong>Confidence:</strong> {(selectedDisease.confidence * 100).toFixed(1)}%
+                  <strong>Confidence:</strong>{" "}
+                  {(selectedDisease.confidence * 100).toFixed(1)}%
                 </div>
                 {selectedDisease.image && (
                   <div className="disease-image">
-                    <img src={`${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}/${selectedDisease.image}`} alt="Disease" />
+                    <img
+                      src={`${process.env.REACT_APP_API_URL?.replace("/api", "") || "http://localhost:5000"}/${selectedDisease.image}`}
+                      alt="Disease"
+                    />
                   </div>
                 )}
                 {selectedDisease.description && (
@@ -212,12 +237,17 @@ const DiseaseReview = ({ onReview }) => {
                   Specialist Notes
                   <textarea
                     value={reviewData.specialistNotes}
-                    onChange={(e) => setReviewData({ ...reviewData, specialistNotes: e.target.value })}
+                    onChange={(e) =>
+                      setReviewData({
+                        ...reviewData,
+                        specialistNotes: e.target.value,
+                      })
+                    }
                     rows="4"
                     placeholder="Add your review notes..."
                   />
                 </label>
-                
+
                 {availableMedicines.length > 0 && (
                   <div className="medicines-selection">
                     <label>
@@ -227,19 +257,27 @@ const DiseaseReview = ({ onReview }) => {
                           <div
                             key={medicine._id}
                             className={`medicine-option ${
-                              reviewData.medicines?.includes(medicine._id) ? 'selected' : ''
+                              reviewData.medicines?.includes(medicine._id)
+                                ? "selected"
+                                : ""
                             }`}
                             onClick={() => toggleMedicine(medicine._id)}
                           >
                             <input
                               type="checkbox"
-                              checked={reviewData.medicines?.includes(medicine._id)}
+                              checked={reviewData.medicines?.includes(
+                                medicine._id,
+                              )}
                               onChange={() => toggleMedicine(medicine._id)}
                             />
                             <div className="medicine-option-content">
                               <div className="medicine-option-header">
-                                <span className="medicine-name">{medicine.name}</span>
-                                <span className={`price-badge ${medicine.priceCategory}`}>
+                                <span className="medicine-name">
+                                  {medicine.name}
+                                </span>
+                                <span
+                                  className={`price-badge ${medicine.priceCategory}`}
+                                >
                                   {medicine.priceCategory.toUpperCase()}
                                 </span>
                               </div>
@@ -254,7 +292,8 @@ const DiseaseReview = ({ onReview }) => {
                       </div>
                       {reviewData.medicines?.length === 0 && (
                         <p className="medicine-hint">
-                          💡 No medicines selected. System will auto-select medicines when approved.
+                          💡 No medicines selected. System will auto-select
+                          medicines when approved.
                         </p>
                       )}
                     </label>
@@ -265,15 +304,17 @@ const DiseaseReview = ({ onReview }) => {
             <div className="modal-actions">
               <button
                 className="reject-btn"
-                onClick={() => handleReview(selectedDisease._id, 'reject')}
+                onClick={() => handleReview(selectedDisease._id, "reject")}
               >
                 <FaTimes /> Reject
               </button>
               <button
                 className="approve-btn"
-                onClick={() => handleReview(selectedDisease._id, 'approve')}
+                onClick={() => handleReview(selectedDisease._id, "approve")}
               >
-                <FaCheck /> Approve {reviewData.medicines?.length > 0 && `(${reviewData.medicines.length} medicines)`}
+                <FaCheck /> Approve{" "}
+                {reviewData.medicines?.length > 0 &&
+                  `(${reviewData.medicines.length} medicines)`}
               </button>
             </div>
           </motion.div>
@@ -284,4 +325,3 @@ const DiseaseReview = ({ onReview }) => {
 };
 
 export default DiseaseReview;
-
